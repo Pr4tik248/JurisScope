@@ -1,0 +1,10 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE users (id BIGSERIAL PRIMARY KEY, email TEXT UNIQUE, created_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE jurisdictions (id BIGSERIAL PRIMARY KEY, country TEXT NOT NULL, region TEXT, UNIQUE(country, region));
+CREATE TABLE legal_sources (id TEXT PRIMARY KEY, name TEXT NOT NULL, source_type TEXT NOT NULL, base_url TEXT, approved BOOLEAN NOT NULL DEFAULT false, metadata JSONB DEFAULT '{}');
+CREATE TABLE legal_documents (id TEXT PRIMARY KEY, source_id TEXT REFERENCES legal_sources(id), jurisdiction_id BIGINT REFERENCES jurisdictions(id), country TEXT NOT NULL, region TEXT, court TEXT, document_type TEXT, act TEXT, section TEXT, title TEXT NOT NULL, document_date DATE, text TEXT NOT NULL, source_url TEXT, metadata JSONB DEFAULT '{}');
+CREATE TABLE legal_chunks (id BIGSERIAL PRIMARY KEY, document_id TEXT REFERENCES legal_documents(id) ON DELETE CASCADE, chunk_index INT NOT NULL, text TEXT NOT NULL, embedding vector(768), metadata JSONB DEFAULT '{}');
+CREATE INDEX legal_chunks_embedding_idx ON legal_chunks USING hnsw (embedding vector_cosine_ops);
+CREATE TABLE queries (id BIGSERIAL PRIMARY KEY, user_id BIGINT REFERENCES users(id), question TEXT NOT NULL, country TEXT NOT NULL, region TEXT, role TEXT, created_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE answers (id BIGSERIAL PRIMARY KEY, query_id BIGINT REFERENCES queries(id), answer JSONB NOT NULL, model TEXT, created_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE citations (id BIGSERIAL PRIMARY KEY, answer_id BIGINT REFERENCES answers(id), document_id TEXT REFERENCES legal_documents(id), source_id TEXT NOT NULL, section TEXT, explanation TEXT);

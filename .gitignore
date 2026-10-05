@@ -1,0 +1,15 @@
+# Secrets: keep local environment files out of source control and public repositories.
+.env
+.env.*
+!.env.example
+!backend/.env.example
+backend/.env
+
+# Dependencies and generated files
+node_modules/
+frontend/.next/
+backend/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+frontend/.npm-cache/
