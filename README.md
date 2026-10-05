@@ -1,5 +1,7 @@
 # Juriscope — source-grounded MVP
 
+GitHub: https://github.com/Pr4tik248/JurisScope
+
 An incremental local MVP with a Next.js interface and a FastAPI service. Gemini and a Congress.gov provider for enacted U.S. federal public laws are connected. India remains mocked; no Indian source, U.S. state law, or court-opinion provider is connected.
 
 ## Project structure
